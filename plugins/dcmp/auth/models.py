@@ -73,7 +73,7 @@ if __package__:
     listen(User, 'after_insert', lambda mapper, connection, target: sync_profiles(action="insert", target=target))
     listen(User, 'after_delete', lambda mapper, connection, target: sync_profiles(action="delete", target=target))
     
-    if configuration.get('webserver', 'auth_backend').endswith('dcmp.auth.backends.password_auth'):
+    if configuration.get('api', 'auth_backend').endswith('dcmp.auth.backends.password_auth'):
         from dcmp.auth.backends.password_auth import PasswordUser
         
         listen(PasswordUser, 'after_insert', lambda mapper, connection, target: sync_profiles(action="insert", target=target))

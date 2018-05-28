@@ -1687,7 +1687,7 @@ oop.inherits(JsonWorker, Mirror);
             errors.push({
                 row: pos.row,
                 column: pos.column,
-                text: e.message,
+                text: str(e),
                 type: "error"
             });
         }

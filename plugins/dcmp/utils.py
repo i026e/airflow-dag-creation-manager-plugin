@@ -2,7 +2,7 @@
 
 import os
 import logging
-from StringIO import StringIO
+from six import StringIO, string_types
 
 from datetime import datetime
 from tempfile import NamedTemporaryFile
@@ -60,7 +60,7 @@ def create_dagbag_by_dag_code(dag_code):
 
 
 def search_conf_iter(search, conf, key=None, task_name=""):
-    if isinstance(conf, basestring):
+    if isinstance(conf, string_types):
         for line in conf.split("\n"):
             if search in line:
                 yield task_name, key, line

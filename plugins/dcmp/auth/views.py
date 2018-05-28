@@ -74,7 +74,7 @@ class DcmpUserProfileModelView(wwwutils.SuperUserMixin, AirflowModelView):
 dcmp_user_profile_model_view = DcmpUserProfileModelView(DcmpUserProfile, settings.Session, category="Admin", name="User Profiles")
 
 
-if configuration.get('webserver', 'auth_backend').endswith('dcmp.auth.backends.password_auth'):
+if configuration.get('api', 'auth_backend').endswith('dcmp.auth.backends.password_auth'):
     from dcmp.auth.backends.password_auth import PasswordUser
     
     class PasswordUserModelView(wwwutils.SuperUserMixin, AirflowModelView):

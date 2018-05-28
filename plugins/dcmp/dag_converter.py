@@ -18,6 +18,8 @@ from dcmp import settings as dcmp_settings
 from dcmp.models import DcmpDag
 from dcmp.utils import create_dagbag_by_dag_code
 
+from six import iteritems
+
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 DAG_TEMPLATES_DIR = os.path.join(BASE_DIR, "dag_templates")
@@ -79,7 +81,7 @@ _["%%(task_name)s"].category = {
         "before_code": "",
         "operator_name": "BashOperator",
         "operator_code": r"""
-    bash_command=r'''%(processed_command)s '''.decode("utf-8"),
+    bash_command=r'''%(processed_command)s ''',
 """, }
 
     HQL_TASK_CODE_TEMPLATE = BASE_TASK_CODE_TEMPLATE % {
@@ -90,7 +92,7 @@ _["%%(task_name)s"].category = {
     mapred_queue=%(mapred_queue_code)s,
     hql=r'''
 %(processed_command)s
-'''.decode("utf-8"),
+''',
 """, }
     
     PYTHON_TASK_CODE_TEMPLATE = BASE_TASK_CODE_TEMPLATE % {
@@ -232,7 +234,7 @@ _["%(task_name)s"] << _["%(upstream_name)s"]
             key, fgcolor = category_data
             task_catgorys_dict[key] = {"order": str(i + 1), "fgcolor": fgcolor}
         
-        for dag_name, conf in confs.iteritems():
+        for dag_name, conf in iteritems(confs):
             emails = [email.strip() for email in conf["emails"].split(",") if email.strip()] or dcmp_settings.DAG_CREATION_MANAGER_DEFAULT_EMAILS
             conf["email_code"] = json.dumps(emails)
 
@@ -243,7 +245,7 @@ _["%(task_name)s"] << _["%(upstream_name)s"]
             
             def get_task_name(origin_task_name):
                 task_name = origin_task_name
-                for i in xrange(10000):
+                for i in range(10000):
                     if task_name in task_names:
                         task_name = "%s_%s" % (origin_task_name, i)
                     else:
@@ -429,7 +431,7 @@ return not skip
         shutil.rmtree(dcmp_settings.DAG_CREATION_MANAGER_DEPLOYED_DAGS_FOLDER, ignore_errors=True)
         os.makedirs(dcmp_settings.DAG_CREATION_MANAGER_DEPLOYED_DAGS_FOLDER)
         for dag_name, dag_code in dag_codes:
-            with open(os.path.join(dcmp_settings.DAG_CREATION_MANAGER_DEPLOYED_DAGS_FOLDER, dag_name + ".py"), "w") as f:
+            with open(os.path.join(dcmp_settings.DAG_CREATION_MANAGER_DEPLOYED_DAGS_FOLDER, dag_name + ".py"), "wb") as f:
                 f.write(dag_code.encode("utf-8"))
     
     def create_dagbag_by_conf(self, conf):
@@ -440,7 +442,7 @@ return not skip
         conf = self.dict_to_json(dag_dict, strict=strict)
         dagbag = self.create_dagbag_by_conf(conf)
         if dagbag.import_errors:
-            raise ImportError(dagbag.import_errors.items()[0][1])
+            raise ImportError(list(dagbag.import_errors.items())[0][1])
         return conf
     
     def create_dag_by_conf(self, conf):
